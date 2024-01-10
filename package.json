@@ -1,18 +1,19 @@
 {
-  "name": "ts-template",
-  "version": "0.0.0",
+  "name": "fake-fingerprint",
+  "version": "0.0.1",
   "packageManager": "pnpm@8.10.5",
-  "description": "a template for typescript project or plugin",
+  "description": "generate fake fingerprint of brower.",
   "type": "module",
   "keywords": [
-    "TODO"
+    "fake",
+    "fingerprint"
   ],
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hemengke1997/ts-template.git"
+    "url": "git+https://github.com/thomas-void0/fake-fingerprint.git"
   },
-  "author": "hemengke <https://github.com/hemengke1997>",
+  "author": "thomas-void0",
   "files": [
     "CHANGELOG.md",
     "README.md",

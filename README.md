@@ -1,6 +1,21 @@
-# ts-template
+# fake fingerprint
 
-> a template for typescript project or plugin
+generate fake fingerprint of brower.
 
-- branch `master` => single repo template
-- branch `monorepo` => monorepo template
+# install
+
+```shell
+npm install fake-fingerprint
+```
+
+# use
+
+# api
+
+# license
+
+MIT [@hemengke1997](https://github.com/hemengke1997)
+
+# inspiration
+
+by [my-fingerprint](https://github.com/omegaee/my-fingerprint)
