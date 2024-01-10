@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "~utils": ["./test-utils.ts"]
+    },
+    "types": ["vite/client"]
+  },
+  "include": ["."],
+  "exclude": ["**/dist/**"]
+}
