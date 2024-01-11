@@ -1,6 +1,6 @@
 import { Base } from './base'
 
-export class NavigatorHandle extends Base<Navigator> {
+export class TimezoneHandle extends Base<Navigator> {
   oriNavigatorDescriptor: ReturnType<typeof Reflect.getOwnPropertyDescriptor>
   navigatorConf: Partial<Navigator> | null
   report: (key: keyof Navigator) => void

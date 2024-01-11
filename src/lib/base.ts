@@ -1,10 +1,9 @@
-export type ReportFn<T> = (key: keyof T) => void
-export abstract class Base<C extends Record<string, any>> {
-  abstract report: ReportFn<C>
+export abstract class Base<A extends Record<string, any>, B = any> {
+  abstract report: (key: B) => void
 
   protected abstract intercept(): void
 
-  abstract set(conf: C): void
+  abstract set(conf: A): void
 
   abstract reset(): void
 }
