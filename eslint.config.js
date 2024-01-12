@@ -7,5 +7,7 @@ export default defineConfig({
     'prefer-spread': 'off',
     'prefer-rest-params': 'off',
     '@typescript-eslint/no-this-alias': 'off',
+    'no-void': 'off',
+    'eqeqeq': 'off',
   },
 })

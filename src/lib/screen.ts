@@ -1,26 +1,24 @@
-import { Base } from './base'
+import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
 
-export class ScreenHandle extends Base<Screen> {
+export type ScreenKey = keyof Screen
+
+export class ScreenHandle extends Base<Screen, ScreenKey> implements AbstractBaseFunc {
   oriScreenDescriptor: ReturnType<typeof Reflect.getOwnPropertyDescriptor>
-  screenConf: Partial<Screen> | null
-  report: (key: keyof Screen) => void
-  constructor(reportFn: (key: keyof Screen) => void) {
-    super()
-    this.report = reportFn
-    this.screenConf = null
+  constructor(opts: BaseOpts<Screen, ScreenKey>) {
+    super(opts)
     this.oriScreenDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'screen')
-    this.intercept()
+    this.proxy()
   }
 
-  private returnDefaultValue(target: Screen, key: keyof Screen) {
+  private returnDefaultValue(target: Screen, key: ScreenKey) {
     const value = target[key]
     return typeof value === 'function' ? (value as Function).bind(target) : value
   }
 
-  protected intercept(): void {
-    const get = (target: Screen, key: keyof Screen) => {
-      if (this.screenConf) {
-        const hasConf = this.screenConf[key]
+  proxy(): void {
+    const get = (target: Screen, key: ScreenKey) => {
+      if (this.config) {
+        const hasConf = this.config[key]
         return hasConf || this.returnDefaultValue(target, key)
       }
 
@@ -34,14 +32,10 @@ export class ScreenHandle extends Base<Screen> {
     })
   }
 
-  set(conf: typeof this.screenConf): void {
-    this.screenConf = conf
-  }
-
-  reset(): void {
+  restore(): void {
     if (!this.oriScreenDescriptor) {
       throw new Error(`reset screen object failed. because oriScreenDescriptor is ${this.oriScreenDescriptor}.`)
     }
-    Reflect.defineProperty(window, 'navigator', this.oriScreenDescriptor)
+    Reflect.defineProperty(window, 'screen', this.oriScreenDescriptor)
   }
 }

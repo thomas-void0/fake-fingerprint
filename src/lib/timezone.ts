@@ -1,50 +1,65 @@
-import { Base } from './base'
+import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
 
-export class TimezoneHandle extends Base<Navigator> {
-  oriNavigatorDescriptor: ReturnType<typeof Reflect.getOwnPropertyDescriptor>
-  navigatorConf: Partial<Navigator> | null
-  report: (key: keyof Navigator) => void
-  constructor(reportFn: (key: keyof Navigator) => void) {
-    super()
-    this.report = reportFn
-    this.navigatorConf = null
-    // cache original navigator descriptor
-    this.oriNavigatorDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'navigator')
-    this.intercept()
+export interface TimezoneOpts {
+  text: string
+  zone: string
+  locale: string
+  offset: number
+}
+
+export type TimezoneKey = 'dateTimeFormat' | 'getTimezoneOffset'
+
+export class TimezoneHandle extends Base<TimezoneOpts, TimezoneKey> implements AbstractBaseFunc {
+  oriDateTimeFormat: typeof Intl.DateTimeFormat
+  oriGetTimezoneOffset: Date['getTimezoneOffset']
+  constructor(opts: BaseOpts<TimezoneOpts, TimezoneKey>) {
+    super(opts)
+    // cache original function
+    this.oriDateTimeFormat ||= Intl.DateTimeFormat
+    this.oriGetTimezoneOffset ||= Date.prototype.getTimezoneOffset
+    this.proxy()
   }
 
-  private returnDefaultValue(target: Navigator, key: keyof Navigator) {
-    const value = target[key]
-    return typeof value === 'function' ? value.bind(target) : value
-  }
+  proxy() {
+    const self = this
+    Reflect.defineProperty(Intl, 'DateTimeFormat', {
+      value: new Proxy(Intl.DateTimeFormat, {
+        get: () => {
+          self.report('dateTimeFormat')
+          return function (this: any, ...args: Parameters<typeof Intl.DateTimeFormat>) {
+            args[0] = self.config?.locale ?? args[0]
+            args[1] = { timeZone: self.config?.zone, ...args[1] }
+            return self.oriDateTimeFormat.apply(this, args)
+          }
+        },
+      }),
+    })
 
-  protected intercept() {
-    const get = (target: Navigator, key: keyof Navigator) => {
-      if (this.navigatorConf) {
-        const hasConf = this.navigatorConf[key]
-        return hasConf || this.returnDefaultValue(target, key)
-      }
-
-      this.report(key)
-
-      return this.returnDefaultValue(target, key)
-    }
-
-    Reflect.defineProperty(window, 'navigator', {
-      value: new Proxy(window.navigator, { get }),
+    Reflect.defineProperty(Date.prototype, 'getTimezoneOffset', {
+      value: new Proxy(Date.prototype.getTimezoneOffset, {
+        get: () => {
+          return function (this: Date) {
+            self.report('getTimezoneOffset')
+            return self.config?.offset != void 0 ? self.config.offset * -60 : self.oriGetTimezoneOffset.apply(this)
+          }
+        },
+      }),
     })
   }
 
-  set(conf: typeof this.navigatorConf) {
-    this.navigatorConf = conf
-  }
-
-  reset(): void {
-    if (!this.oriNavigatorDescriptor) {
-      throw new Error(
-        `reset navigator object failed. because oriNavigatorDescriptor is ${this.oriNavigatorDescriptor}.`,
-      )
+  restore(): void {
+    if (!this.oriDateTimeFormat) {
+      throw new Error(`reset timezone failed. because oriDateTimeFormat is ${this.oriDateTimeFormat}.`)
     }
-    Reflect.defineProperty(window, 'navigator', this.oriNavigatorDescriptor)
+
+    if (!this.oriGetTimezoneOffset) {
+      throw new Error(`reset timezone failed. because oriGetTimezoneOffset is ${this.oriGetTimezoneOffset}.`)
+    }
+    Reflect.defineProperty(Intl, 'DateTimeFormat', {
+      value: this.oriDateTimeFormat,
+    })
+    Reflect.defineProperty(Date, 'getTimezoneOffset', {
+      value: this.oriGetTimezoneOffset,
+    })
   }
 }

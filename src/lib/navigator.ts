@@ -1,27 +1,25 @@
-import { Base } from './base'
+import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
 
-export class NavigatorHandle extends Base<Navigator> {
+export type NavigatorKey = keyof Navigator
+
+export class NavigatorHandle extends Base<Navigator, NavigatorKey> implements AbstractBaseFunc {
   oriNavigatorDescriptor: ReturnType<typeof Reflect.getOwnPropertyDescriptor>
-  navigatorConf: Partial<Navigator> | null
-  report: (key: keyof Navigator) => void
-  constructor(reportFn: (key: keyof Navigator) => void) {
-    super()
-    this.report = reportFn
-    this.navigatorConf = null
+  constructor(opts: BaseOpts<Navigator, NavigatorKey>) {
+    super(opts)
     // cache original navigator descriptor
     this.oriNavigatorDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'navigator')
-    this.intercept()
+    this.proxy()
   }
 
-  private returnDefaultValue(target: Navigator, key: keyof Navigator) {
+  private returnDefaultValue(target: Navigator, key: NavigatorKey) {
     const value = target[key]
     return typeof value === 'function' ? value.bind(target) : value
   }
 
-  protected intercept() {
-    const get = (target: Navigator, key: keyof Navigator) => {
-      if (this.navigatorConf) {
-        const hasConf = this.navigatorConf[key]
+  proxy() {
+    const get = (target: Navigator, key: NavigatorKey) => {
+      if (this.config) {
+        const hasConf = this.config[key]
         return hasConf || this.returnDefaultValue(target, key)
       }
 
@@ -35,11 +33,7 @@ export class NavigatorHandle extends Base<Navigator> {
     })
   }
 
-  set(conf: typeof this.navigatorConf) {
-    this.navigatorConf = conf
-  }
-
-  reset(): void {
+  restore() {
     if (!this.oriNavigatorDescriptor) {
       throw new Error(
         `reset navigator object failed. because oriNavigatorDescriptor is ${this.oriNavigatorDescriptor}.`,
