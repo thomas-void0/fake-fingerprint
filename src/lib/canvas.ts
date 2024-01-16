@@ -16,7 +16,6 @@ export class CanvasHandle extends Base<CanvasOpts, CanvasKey> implements Abstrac
   constructor(opts: BaseOpts<CanvasOpts, CanvasKey>) {
     super(opts)
     this.oriToDataURL = HTMLCanvasElement.prototype.toDataURL
-    this.proxy()
   }
 
   proxy(): void {

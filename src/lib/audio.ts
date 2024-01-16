@@ -12,7 +12,6 @@ export class AudioHandle extends Base<AudioOpts, AudioKey> implements AbstractBa
   constructor(opts: BaseOpts<AudioOpts, AudioKey>) {
     super(opts)
     this.oriCreateDynamicsCompressor ||= OfflineAudioContext.prototype.createDynamicsCompressor
-    this.proxy()
   }
 
   proxy() {

@@ -8,7 +8,6 @@ export class NavigatorHandle extends Base<Navigator, NavigatorKey> implements Ab
     super(opts)
     // cache original navigator descriptor
     this.oriNavigatorDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'navigator')
-    this.proxy()
   }
 
   private returnDefaultValue(target: Navigator, key: NavigatorKey) {

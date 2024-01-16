@@ -17,7 +17,6 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneKey> implements A
     // cache original function
     this.oriDateTimeFormat ||= Intl.DateTimeFormat
     this.oriGetTimezoneOffset ||= Date.prototype.getTimezoneOffset
-    this.proxy()
   }
 
   proxy() {

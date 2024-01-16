@@ -13,7 +13,6 @@ export class WebRTCHandle extends Base<WebRTCOpts, WebRTKey> implements Abstract
     super(opts)
     this.oriRTCPeerConnection = RTCPeerConnection
     this.oriRTCAddEventListener = RTCPeerConnection.prototype.addEventListener
-    this.proxy()
   }
 
   private handler(target: Record<string | symbol, any>, key: string | symbol) {

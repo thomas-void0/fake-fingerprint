@@ -7,7 +7,6 @@ export class ScreenHandle extends Base<Screen, ScreenKey> implements AbstractBas
   constructor(opts: BaseOpts<Screen, ScreenKey>) {
     super(opts)
     this.oriScreenDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'screen')
-    this.proxy()
   }
 
   private returnDefaultValue(target: Screen, key: ScreenKey) {

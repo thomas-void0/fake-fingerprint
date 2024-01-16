@@ -13,7 +13,6 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLKey> implements AbstractBa
     super(opts)
     this.oriWebGLGetParameter = WebGLRenderingContext.prototype.getParameter
     this.oriWebGL2GetParameter = WebGL2RenderingContext.prototype.getParameter
-    this.proxy()
   }
 
   proxy(): void {
