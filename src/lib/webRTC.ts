@@ -21,6 +21,7 @@ export class WebRTCHandle extends Base<WebRTCOpts, WebRTKey> implements Abstract
     if (!res) return target[key]
     // if prop key is candidate, return new object
     if (key === 'candidate') {
+      this.report('webRTC')
       // whether exist ip
       const ipRe = /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/g
       const pubIP = ipRe.exec(res.candidate)?.[0] // original ip
