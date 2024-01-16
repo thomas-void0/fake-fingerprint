@@ -21,7 +21,7 @@ export class CanvasHandle extends Base<CanvasOpts, CanvasKey> implements Abstrac
 
   proxy(): void {
     const get = () => {
-      const self = this as CanvasHandle
+      const self = this
       return function (this: HTCElementProp, ...args: Parameters<HTCElementProp['toDataURL']>) {
         // repaint
         const internalThis = this
