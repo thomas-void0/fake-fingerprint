@@ -20,31 +20,26 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLReport> implements Abstrac
 
   proxy(): void {
     const self = this
-    Reflect.defineProperty(WebGLRenderingContext.prototype, 'getParameter', {
-      value: new Proxy(WebGLRenderingContext.prototype.getParameter, {
-        get: () => {
-          self.report({ type: 'webGL', key: 'WebGLRenderingContext.getParameter' })
-          return function (this: WebGLRenderingContext, ...args: Parameters<WebGLRenderingContext['getParameter']>) {
-            const debugEx = this.getExtension('WEBGL_debug_renderer_info')
-            if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param
-            return self.oriWebGLGetParameter.apply(this, args)
-          }
-        },
-      }),
-    })
 
-    Reflect.defineProperty(WebGL2RenderingContext.prototype, 'getParameter', {
-      value: new Proxy(WebGL2RenderingContext.prototype.getParameter, {
-        get: () => {
-          self.report({ type: 'webGL', key: 'WebGL2RenderingContext.getParameter' })
-          return function (this: WebGL2RenderingContext, ...args: Parameters<WebGL2RenderingContext['getParameter']>) {
-            const debugEx = this.getExtension('WEBGL_debug_renderer_info')
-            if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param
-            return self.oriWebGL2GetParameter.apply(this, args)
-          }
-        },
-      }),
-    })
+    WebGLRenderingContext.prototype.getParameter = function (
+      this: WebGLRenderingContext,
+      ...args: Parameters<WebGLRenderingContext['getParameter']>
+    ) {
+      self.report({ type: 'webGL', key: 'WebGLRenderingContext.getParameter' })
+      const debugEx = this.getExtension('WEBGL_debug_renderer_info')
+      if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param
+      return self.oriWebGLGetParameter.apply(this, args)
+    }
+
+    WebGL2RenderingContext.prototype.getParameter = function (
+      this: WebGL2RenderingContext,
+      ...args: Parameters<WebGL2RenderingContext['getParameter']>
+    ) {
+      self.report({ type: 'webGL', key: 'WebGL2RenderingContext.getParameter' })
+      const debugEx = this.getExtension('WEBGL_debug_renderer_info')
+      if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param
+      return self.oriWebGL2GetParameter.apply(this, args)
+    }
   }
 
   restore(): void {
@@ -56,7 +51,7 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLReport> implements Abstrac
       throw new Error(`reset webGL2 failed. because oriWebGL2GetParameter is ${this.oriWebGL2GetParameter}.`)
     }
 
-    Reflect.defineProperty(WebGLRenderingContext.prototype, 'getParameter', this.oriWebGLGetParameter)
-    Reflect.defineProperty(WebGL2RenderingContext.prototype, 'getParameter', this.oriWebGL2GetParameter)
+    WebGLRenderingContext.prototype.getParameter = this.oriWebGLGetParameter
+    WebGL2RenderingContext.prototype.getParameter = this.oriWebGL2GetParameter
   }
 }

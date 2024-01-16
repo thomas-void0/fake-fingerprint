@@ -37,16 +37,10 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneReport> implement
       }),
     })
 
-    Reflect.defineProperty(Date.prototype, 'getTimezoneOffset', {
-      value: new Proxy(Date.prototype.getTimezoneOffset, {
-        get: () => {
-          return function (this: Date) {
-            self.report({ type: 'timezone', key: 'getTimezoneOffset' })
-            return self.config?.offset != void 0 ? self.config.offset * -60 : self.oriGetTimezoneOffset.apply(this)
-          }
-        },
-      }),
-    })
+    Date.prototype.getTimezoneOffset = function (this: Date) {
+      self.report({ type: 'timezone', key: 'getTimezoneOffset' })
+      return self.config?.offset != void 0 ? self.config.offset * -60 : self.oriGetTimezoneOffset.apply(this)
+    }
   }
 
   restore(): void {
@@ -60,8 +54,6 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneReport> implement
     Reflect.defineProperty(Intl, 'DateTimeFormat', {
       value: this.oriDateTimeFormat,
     })
-    Reflect.defineProperty(Date, 'getTimezoneOffset', {
-      value: this.oriGetTimezoneOffset,
-    })
+    Date.prototype.getTimezoneOffset = this.oriGetTimezoneOffset
   }
 }
