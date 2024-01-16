@@ -114,10 +114,13 @@ export default class FakeFingerPrint {
 
 const instance = new FakeFingerPrint({
   config: {
-    navigator: { userAgent: 'gaga' },
-    screen: {
-      width: 9999,
-      height: 88,
+    // navigator: { userAgent: 'gaga' },
+    // screen: {
+    //   width: 9999,
+    //   height: 88,
+    // },
+    canvas: {
+      fillText: 'gaga梦',
     },
   },
   report: (arg) => {
@@ -125,4 +128,4 @@ const instance = new FakeFingerPrint({
   },
 })
 
-instance.open(['navigator', 'screen'])
+instance.open(['canvas'])
