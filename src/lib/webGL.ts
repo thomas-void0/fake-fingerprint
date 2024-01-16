@@ -1,15 +1,18 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
-
-export type WebGLKey = 'webGL' | 'webGL2'
+import { type AbstractBaseFunc, Base } from './base'
 
 export interface WebGLOpts {
   param: ReturnType<WebGLRenderingContext['getParameter']>
 }
 
-export class WebGLHandle extends Base<WebGLOpts, WebGLKey> implements AbstractBaseFunc {
+export type WebGLReport = {
+  type: 'webGL'
+  key: 'WebGLRenderingContext.getParameter' | 'WebGL2RenderingContext.getParameter'
+}
+
+export class WebGLHandle extends Base<WebGLOpts, WebGLReport> implements AbstractBaseFunc {
   oriWebGLGetParameter: WebGLRenderingContext['getParameter']
   oriWebGL2GetParameter: WebGL2RenderingContext['getParameter']
-  constructor(opts: BaseOpts<WebGLOpts, WebGLKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<WebGLOpts, WebGLReport>>[0]) {
     super(opts)
     this.oriWebGLGetParameter = WebGLRenderingContext.prototype.getParameter
     this.oriWebGL2GetParameter = WebGL2RenderingContext.prototype.getParameter
@@ -20,7 +23,7 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLKey> implements AbstractBa
     Reflect.defineProperty(WebGLRenderingContext.prototype, 'getParameter', {
       value: new Proxy(WebGLRenderingContext.prototype.getParameter, {
         get: () => {
-          self.report('webGL')
+          self.report({ type: 'webGL', key: 'WebGLRenderingContext.getParameter' })
           return function (this: WebGLRenderingContext, ...args: Parameters<WebGLRenderingContext['getParameter']>) {
             const debugEx = this.getExtension('WEBGL_debug_renderer_info')
             if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param
@@ -33,7 +36,7 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLKey> implements AbstractBa
     Reflect.defineProperty(WebGL2RenderingContext.prototype, 'getParameter', {
       value: new Proxy(WebGL2RenderingContext.prototype.getParameter, {
         get: () => {
-          self.report('webGL2')
+          self.report({ type: 'webGL', key: 'WebGL2RenderingContext.getParameter' })
           return function (this: WebGL2RenderingContext, ...args: Parameters<WebGL2RenderingContext['getParameter']>) {
             const debugEx = this.getExtension('WEBGL_debug_renderer_info')
             if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) return self.config?.param

@@ -1,20 +1,16 @@
 /* base class */
-export interface BaseOpts<C, K> {
+export interface BaseOpts<C, R extends { type: string; key: string | symbol }> {
   /* need config of change */
   config?: C
   /* when proxy to be visit. It will invoke, key is to be key of visit */
-  visitReport?: (key: K) => void
-  /* need keys of report. default null, will report all keys */
-  reportKeys?: K[]
+  visitReport?: (reportArg: R) => void
 }
-export class Base<C, K> {
-  protected visitReport: (key: K) => void
+export class Base<C, R extends { type: string; key: string | symbol }> {
+  protected visitReport: (key: R) => void
   protected config: C | null
-  protected reportKeys: K[] | null
-  constructor(opts: BaseOpts<C, K>) {
+  constructor(opts: BaseOpts<C, R>) {
     this.config = opts.config || null
     this.visitReport = opts.visitReport || (() => {})
-    this.reportKeys = opts.reportKeys || null
   }
 
   /* set current config */
@@ -28,11 +24,8 @@ export class Base<C, K> {
   }
 
   /* when prop to be visit. invoke this function notice user. */
-  protected report(key: K) {
-    const keys = this.reportKeys
-    if (!keys || keys?.includes(key)) {
-      this.visitReport(key)
-    }
+  protected report(arg: R) {
+    this.visitReport(arg)
   }
 }
 

@@ -1,20 +1,20 @@
-import { type AudioHandle, type AudioOpts } from './lib/audio'
-import { type CanvasHandle, type CanvasOpts } from './lib/canvas'
-import { type NavigatorHandle } from './lib/navigator'
-import { type ScreenHandle } from './lib/screen'
-import { type TimezoneHandle, type TimezoneOpts } from './lib/timezone'
-import { type WebGLHandle, type WebGLOpts } from './lib/webGL'
-import { type WebRTCHandle, type WebRTCOpts } from './lib/webRTC'
+import { type AudioHandle, type AudioOpts, type AudioReport } from './lib/audio'
+import { type CanvasHandle, type CanvasOpts, type CanvasReport } from './lib/canvas'
+import { type NavigatorHandle, type NavigatorReport } from './lib/navigator'
+import { type ScreenHandle, type ScreenReport } from './lib/screen'
+import { type TimezoneHandle, type TimezoneOpts, type TimezoneReport } from './lib/timezone'
+import { type WebGLHandle, type WebGLOpts, type WebGLReport } from './lib/webGL'
+import { type WebRTCHandle, type WebRTCOpts, type WebRTCReport } from './lib/webRTC'
 
-export interface CONFIG {
-  navigator: Navigator
-  screen: Screen
+export type CONFIG = Partial<{
+  navigator: Partial<Navigator>
+  screen: Partial<Screen>
   canvas: CanvasOpts
   timezone: TimezoneOpts
   audio: AudioOpts
   webGL: WebGLOpts
   webRTC: WebRTCOpts
-}
+}>
 
 export type ClassType =
   | typeof NavigatorHandle
@@ -25,11 +25,31 @@ export type ClassType =
   | typeof WebGLHandle
   | typeof WebRTCHandle
 
+export type ReportKey =
+  | AudioReport['key']
+  | CanvasReport['key']
+  | NavigatorReport['key']
+  | ScreenReport['key']
+  | TimezoneReport['key']
+  | WebGLReport['key']
+  | WebRTCReport['key']
+
+export type ReportArg =
+  | AudioReport
+  | CanvasReport
+  | NavigatorReport
+  | ScreenReport
+  | TimezoneReport
+  | WebGLReport
+  | WebRTCReport
+
 export interface FakeFingerPrintOptions {
   /* confuse config such as navigator info or screen info and more. */
   config?: CONFIG
   /* when property or function to be visit. It‘s will be invoke. */
-  visitReport?: (type: string) => void
+  report?: (arg: ReportArg) => void
+  /* need keys of report. default null, will report all keys */
+  reportKeys?: ReportKey[]
 }
 
 export interface InstanceRecord {

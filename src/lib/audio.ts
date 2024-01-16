@@ -1,15 +1,18 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
+import { type AbstractBaseFunc, Base } from './base'
 
 export interface AudioOpts {
   /* strength of noise */
   strength: GainNode['gain']['value']
 }
 
-export type AudioKey = 'audio'
+export type AudioReport = {
+  type: 'audio'
+  key: 'createDynamicsCompressor'
+}
 
-export class AudioHandle extends Base<AudioOpts, AudioKey> implements AbstractBaseFunc {
+export class AudioHandle extends Base<AudioOpts, AudioReport> implements AbstractBaseFunc {
   oriCreateDynamicsCompressor: OfflineAudioContext['createDynamicsCompressor']
-  constructor(opts: BaseOpts<AudioOpts, AudioKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<AudioOpts, AudioReport>>[0]) {
     super(opts)
     this.oriCreateDynamicsCompressor ||= OfflineAudioContext.prototype.createDynamicsCompressor
   }
@@ -21,6 +24,7 @@ export class AudioHandle extends Base<AudioOpts, AudioKey> implements AbstractBa
         this: OfflineAudioContext,
         ...args: Parameters<OfflineAudioContext['createDynamicsCompressor']>
       ) {
+        self.report({ type: 'audio', key: 'createDynamicsCompressor' })
         const internalThis = this
         const compressor = self.oriCreateDynamicsCompressor.apply(internalThis, args)
         /* create node, add some noise */

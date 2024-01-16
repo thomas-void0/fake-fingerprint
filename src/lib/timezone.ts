@@ -1,4 +1,4 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
+import { type AbstractBaseFunc, Base } from './base'
 
 export interface TimezoneOpts {
   text: string
@@ -7,12 +7,15 @@ export interface TimezoneOpts {
   offset: number
 }
 
-export type TimezoneKey = 'dateTimeFormat' | 'getTimezoneOffset'
+export type TimezoneReport = {
+  type: 'timezone'
+  key: 'dateTimeFormat' | 'getTimezoneOffset'
+}
 
-export class TimezoneHandle extends Base<TimezoneOpts, TimezoneKey> implements AbstractBaseFunc {
+export class TimezoneHandle extends Base<TimezoneOpts, TimezoneReport> implements AbstractBaseFunc {
   oriDateTimeFormat: typeof Intl.DateTimeFormat
   oriGetTimezoneOffset: Date['getTimezoneOffset']
-  constructor(opts: BaseOpts<TimezoneOpts, TimezoneKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<TimezoneOpts, TimezoneReport>>[0]) {
     super(opts)
     // cache original function
     this.oriDateTimeFormat ||= Intl.DateTimeFormat
@@ -24,7 +27,7 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneKey> implements A
     Reflect.defineProperty(Intl, 'DateTimeFormat', {
       value: new Proxy(Intl.DateTimeFormat, {
         get: () => {
-          self.report('dateTimeFormat')
+          self.report({ type: 'timezone', key: 'dateTimeFormat' })
           return function (this: any, ...args: Parameters<typeof Intl.DateTimeFormat>) {
             args[0] = self.config?.locale ?? args[0]
             args[1] = { timeZone: self.config?.zone, ...args[1] }
@@ -38,7 +41,7 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneKey> implements A
       value: new Proxy(Date.prototype.getTimezoneOffset, {
         get: () => {
           return function (this: Date) {
-            self.report('getTimezoneOffset')
+            self.report({ type: 'timezone', key: 'getTimezoneOffset' })
             return self.config?.offset != void 0 ? self.config.offset * -60 : self.oriGetTimezoneOffset.apply(this)
           }
         },

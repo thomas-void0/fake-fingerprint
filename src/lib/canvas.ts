@@ -1,8 +1,11 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
+import { type AbstractBaseFunc, Base } from './base'
 
 export type HTCElementProp = typeof HTMLCanvasElement.prototype
 
-export type CanvasKey = 'canvas'
+export type CanvasReport = {
+  type: 'canvas'
+  key: 'toDataURL'
+}
 
 export interface CanvasOpts {
   fillText: Parameters<CanvasRenderingContext2D['fillText']>[0]
@@ -11,9 +14,9 @@ export interface CanvasOpts {
 /**
  * @tips change canvas toDataURL funciton. this will cause the canvas method to be abnormal.
  */
-export class CanvasHandle extends Base<CanvasOpts, CanvasKey> implements AbstractBaseFunc {
+export class CanvasHandle extends Base<CanvasOpts, CanvasReport> implements AbstractBaseFunc {
   oriToDataURL: HTCElementProp['toDataURL']
-  constructor(opts: BaseOpts<CanvasOpts, CanvasKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<CanvasOpts, CanvasReport>>[0]) {
     super(opts)
     this.oriToDataURL = HTMLCanvasElement.prototype.toDataURL
   }
@@ -22,6 +25,8 @@ export class CanvasHandle extends Base<CanvasOpts, CanvasKey> implements Abstrac
     const get = () => {
       const self = this
       return function (this: HTCElementProp, ...args: Parameters<HTCElementProp['toDataURL']>) {
+        // report invoke
+        self.report({ type: 'canvas', key: 'toDataURL' })
         // repaint
         const internalThis = this
         const ctx = internalThis.getContext('2d')
@@ -29,8 +34,6 @@ export class CanvasHandle extends Base<CanvasOpts, CanvasKey> implements Abstrac
           ctx.fillStyle = 'rgba(0, 0, 0, 0.01)'
           ctx.fillText(self.config?.fillText || '', 0, 2)
         }
-        // report invoke
-        self.report('canvas')
         return self.oriToDataURL.apply(internalThis, args)
       }
     }

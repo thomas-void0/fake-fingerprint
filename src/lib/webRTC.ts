@@ -1,15 +1,18 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
-
-export type WebRTKey = 'webRTC'
+import { type AbstractBaseFunc, Base } from './base'
 
 export interface WebRTCOpts {
   address: RTCIceCandidate['address']
 }
 
-export class WebRTCHandle extends Base<WebRTCOpts, WebRTKey> implements AbstractBaseFunc {
+export type WebRTCReport = {
+  type: 'webRTC'
+  key: 'candidate'
+}
+
+export class WebRTCHandle extends Base<WebRTCOpts, WebRTCReport> implements AbstractBaseFunc {
   oriRTCPeerConnection: typeof RTCPeerConnection
   oriRTCAddEventListener: RTCPeerConnection['addEventListener']
-  constructor(opts: BaseOpts<WebRTCOpts, WebRTKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<WebRTCOpts, WebRTCReport>>[0]) {
     super(opts)
     this.oriRTCPeerConnection = RTCPeerConnection
     this.oriRTCAddEventListener = RTCPeerConnection.prototype.addEventListener
@@ -20,7 +23,10 @@ export class WebRTCHandle extends Base<WebRTCOpts, WebRTKey> implements Abstract
     if (!res) return target[key]
     // if prop key is candidate, return new object
     if (key === 'candidate') {
-      this.report('webRTC')
+      this.report({
+        type: 'webRTC',
+        key: 'candidate',
+      })
       // whether exist ip
       const ipRe = /[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}/g
       const pubIP = ipRe.exec(res.candidate)?.[0] // original ip

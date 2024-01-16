@@ -5,7 +5,15 @@ import { ScreenHandle } from './lib/screen'
 import { TimezoneHandle } from './lib/timezone'
 import { WebGLHandle } from './lib/webGL'
 import { WebRTCHandle } from './lib/webRTC'
-import { type CONFIG, type ClassType, type FakeFingerPrintOptions, type InstanceRecord, type KeysStatus } from './type'
+import {
+  type CONFIG,
+  type ClassType,
+  type FakeFingerPrintOptions,
+  type InstanceRecord,
+  type KeysStatus,
+  type ReportArg,
+} from './type'
+// import {  } from 't2t-tools'
 
 const ClassMap = new Map<keyof CONFIG, ClassType>([
   ['navigator', NavigatorHandle],
@@ -19,18 +27,33 @@ const ClassMap = new Map<keyof CONFIG, ClassType>([
 
 // read options, init class
 export default class FakeFingerPrint {
-  opts: FakeFingerPrintOptions
-  instanceRecords: InstanceRecord[]
+  private opts: FakeFingerPrintOptions
+  private instanceRecords: InstanceRecord[]
   constructor(options: FakeFingerPrintOptions) {
     this.opts = options
     this.instanceRecords = []
   }
+
+  /* report visit of key */
+  private internalReport(arg: ReportArg) {
+    if (!this.opts) {
+      return
+    }
+
+    const { reportKeys } = this.opts
+
+    if (!reportKeys || reportKeys.includes(arg.key)) {
+      this.opts.report?.(arg)
+    }
+  }
+
   /* update config */
   set(conf: CONFIG) {
     if (!conf) {
       throw new TypeError('argument of set function can not be empty.')
     }
 
+    this.opts.config = conf
     ;(Reflect.ownKeys(conf) as (keyof CONFIG)[]).forEach((key: keyof CONFIG) => {
       const record = this.instanceRecords.find((record) => record.key === key)
       record && record.instance.setConfig(conf[key] as any)
@@ -74,7 +97,7 @@ export default class FakeFingerPrint {
         }
         const newInstance = new Cls({
           config: this.opts.config?.[key] as any,
-          visitReport: this.opts.visitReport,
+          visitReport: this.internalReport.bind(this),
         })
         newInstance.proxy()
         newInstanceRecords.push({
@@ -88,3 +111,18 @@ export default class FakeFingerPrint {
     this.instanceRecords = this.instanceRecords.concat(newInstanceRecords)
   }
 }
+
+const instance = new FakeFingerPrint({
+  config: {
+    navigator: { userAgent: 'gaga' },
+    screen: {
+      width: 9999,
+      height: 88,
+    },
+  },
+  report: (arg) => {
+    console.log('key:', arg)
+  },
+})
+
+instance.open(['navigator', 'screen'])

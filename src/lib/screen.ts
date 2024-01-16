@@ -1,27 +1,32 @@
-import { type AbstractBaseFunc, Base, type BaseOpts } from './base'
+import { type AbstractBaseFunc, Base } from './base'
 
 export type ScreenKey = keyof Screen
 
-export class ScreenHandle extends Base<Screen, ScreenKey> implements AbstractBaseFunc {
+export type ScreenReport = {
+  type: 'screen'
+  key: keyof Screen
+}
+
+export class ScreenHandle extends Base<Screen, ScreenReport> implements AbstractBaseFunc {
   oriScreenDescriptor: ReturnType<typeof Reflect.getOwnPropertyDescriptor>
-  constructor(opts: BaseOpts<Screen, ScreenKey>) {
+  constructor(opts: ConstructorParameters<typeof Base<Screen, ScreenReport>>[0]) {
     super(opts)
     this.oriScreenDescriptor ||= Reflect.getOwnPropertyDescriptor(window, 'screen')
   }
 
-  private returnDefaultValue(target: Screen, key: ScreenKey) {
+  private returnDefaultValue(target: Screen, key: keyof Screen) {
     const value = target[key]
     return typeof value === 'function' ? (value as Function).bind(target) : value
   }
 
   proxy(): void {
-    const get = (target: Screen, key: ScreenKey) => {
+    const get = (target: Screen, key: keyof Screen) => {
+      this.report({ type: 'screen', key })
+
       if (this.config) {
         const hasConf = this.config[key]
         return hasConf || this.returnDefaultValue(target, key)
       }
-
-      this.report(key)
 
       return this.returnDefaultValue(target, key)
     }
