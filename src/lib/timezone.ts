@@ -1,9 +1,11 @@
 import { type AbstractBaseFunc, Base } from './base'
 
 export interface TimezoneOpts {
-  text: string
-  zone: string
-  locale: string
+  /* eg: 'Asia/Shanghai' | 'America/New_York' | 'Europe/London' */
+  zone: Intl.DateTimeFormatOptions['timeZone']
+  /* eg: 'zh-CN' 'en-US' 'en-GB'...*/
+  locale: Intl.LocalesArgument
+  /* offest of time. unit is hour */
   offset: number
 }
 
@@ -24,18 +26,17 @@ export class TimezoneHandle extends Base<TimezoneOpts, TimezoneReport> implement
 
   proxy() {
     const self = this
-    Reflect.defineProperty(Intl, 'DateTimeFormat', {
-      value: new Proxy(Intl.DateTimeFormat, {
-        get: () => {
-          self.report({ type: 'timezone', key: 'dateTimeFormat' })
-          return function (this: any, ...args: Parameters<typeof Intl.DateTimeFormat>) {
-            args[0] = self.config?.locale ?? args[0]
-            args[1] = { timeZone: self.config?.zone, ...args[1] }
-            return self.oriDateTimeFormat.apply(this, args)
-          }
-        },
-      }),
-    })
+
+    // @ts-expect-error
+    Intl.DateTimeFormat = function (
+      this: Intl.DateTimeFormat,
+      ...args: ConstructorParameters<typeof Intl.DateTimeFormat>
+    ) {
+      self.report({ type: 'timezone', key: 'dateTimeFormat' })
+      args[0] = (self.config?.locale as any) ?? args[0]
+      args[1] = { timeZone: self.config?.zone, ...args[1] }
+      return self.oriDateTimeFormat.apply(this, args)
+    }
 
     Date.prototype.getTimezoneOffset = function (this: Date) {
       self.report({ type: 'timezone', key: 'getTimezoneOffset' })

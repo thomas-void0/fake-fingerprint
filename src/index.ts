@@ -119,8 +119,16 @@ const instance = new FakeFingerPrint({
     //   width: 9999,
     //   height: 88,
     // },
-    canvas: {
-      fillText: 'gaga梦',
+    // canvas: {
+    //   fillText: 'gaga梦',
+    // },
+    // audio: {
+    //   strength: 100,
+    // },
+    timezone: {
+      zone: 'America/NewYork',
+      locale: 'en-US',
+      offset: -5,
     },
   },
   report: (arg) => {
@@ -128,4 +136,4 @@ const instance = new FakeFingerPrint({
   },
 })
 
-instance.open(['canvas'])
+instance.open(['timezone'])
