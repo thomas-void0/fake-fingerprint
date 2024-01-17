@@ -54,7 +54,7 @@ export class WebGLHandle extends Base<WebGLOpts, WebGLReport> implements Abstrac
     ) {
       const debugEx = this.getExtension('WEBGL_debug_renderer_info')
       /* Renderer string of the graphics driver. */
-      if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL){
+      if (args[0] === debugEx?.UNMASKED_RENDERER_WEBGL) {
         self.report({ type: 'webGL', key: 'WebGL2RenderingContext.renderDriver' })
         return self.config?.driver
       }

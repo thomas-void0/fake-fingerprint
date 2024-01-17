@@ -1,6 +1,7 @@
 import { type AbstractBaseFunc, Base } from './base'
 
 export interface WebRTCOpts {
+  /* eg: 127.0.0.1 */
   address: RTCIceCandidate['address']
 }
 

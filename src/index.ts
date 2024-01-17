@@ -130,13 +130,16 @@ const instance = new FakeFingerPrint({
     //   locale: 'en-US',
     //   offset: -5,
     // },
-    webGL: {
-      driver: 'ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)',
-    },
+    // webGL: {
+    //   driver: 'ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)',
+    // },
+    // webRTC: {
+    //   address: '192.23.14.123',
+    // },
   },
   report: (arg) => {
     console.log('key:', arg)
   },
 })
 
-instance.open(['webGL'])
+instance.open(['webRTC'])
