@@ -56,37 +56,48 @@ export class WebRTCHandle extends Base<WebRTCOpts, WebRTCReport> implements Abst
         RTCIceCandidate.prototype,
       )
     }
-    if (typeof res === 'function') return res.bind(target)
-    return res
+    return typeof res === 'function' ? res.bind(target) : res
   }
 
   proxy(): void {
     const self = this
 
-    RTCPeerConnection.prototype.addEventListener = function (
-      ...args: Parameters<RTCPeerConnection['addEventListener']>
-    ) {
-      if ('icecandidate' == arguments[0]) {
+    RTCPeerConnection.prototype.addEventListener = function () {
+      if (arguments[0] === 'icecandidate') {
         const call = arguments[1]
         if (call) {
-          arguments[1] = (event: Parameters<RTCPeerConnection['addEventListener']>[1]) => {
+          arguments[1] = (event: Event) => {
             call(new Proxy(event, { get: self.handler }))
           }
         }
-        return self.oriRTCAddEventListener.apply(this, args)
+        return self.oriRTCAddEventListener.apply(this, arguments)
       }
-      return self.oriRTCAddEventListener.apply(this, args)
+      return self.oriRTCAddEventListener.apply(this, arguments)
     }
 
-    window.RTCPeerConnection = function (
-      this: RTCPeerConnection,
-      ...args: ConstructorParameters<typeof RTCPeerConnection>
-    ) {
+    window.RTCPeerConnection = function (this: RTCPeerConnection) {
       const connection =
         this instanceof self.oriRTCPeerConnection
-          ? self.oriRTCPeerConnection.apply(this, args)
-          : new self.oriRTCPeerConnection(...args)
-      return new Proxy(connection!, { get: self.handler })
+          ? self.oriRTCPeerConnection.apply(this, arguments)
+          : new self.oriRTCPeerConnection(...arguments)
+
+      return new Proxy(connection!, {
+        get: (target, key) => {
+          const res = target[key]
+          return typeof res === 'function' ? res.bind(target) : res
+        },
+        set: (target, key, value) => {
+          if (!value) return true
+          if (key === 'onicecandidate') {
+            target[key] = (event: Event) => {
+              value(new Proxy(event, { get: self.handler }))
+            }
+          } else {
+            target[key] = value
+          }
+          return true
+        },
+      })
     } as unknown as typeof RTCPeerConnection
   }
 
