@@ -47,7 +47,7 @@ export interface FakeFingerPrintOptions {
   /* confuse config such as navigator info or screen info and more. */
   config?: CONFIG
   /* when property or function to be visit. It‘s will be invoke. */
-  report?: (arg: ReportArg) => void
+  report: (arg: ReportArg) => void
   /* need keys of report. default null, will report all keys */
   reportKeys?: ReportKey[]
 }
