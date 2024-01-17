@@ -1,3 +1,4 @@
+import { type MutableKeys } from 't2t-tools'
 import { type AbstractBaseFunc, Base } from './base'
 
 export interface WebRTCOpts {
@@ -62,31 +63,38 @@ export class WebRTCHandle extends Base<WebRTCOpts, WebRTCReport> implements Abst
   proxy(): void {
     const self = this
 
-    RTCPeerConnection.prototype.addEventListener = function () {
-      if (arguments[0] === 'icecandidate') {
-        const call = arguments[1]
+    RTCPeerConnection.prototype.addEventListener = function (
+      this: RTCPeerConnection,
+      ...arg: Parameters<RTCPeerConnection['addEventListener']>
+    ) {
+      if (arg[0] === 'icecandidate') {
+        const call = arg[1]
         if (call) {
-          arguments[1] = (event: Event) => {
+          arg[1] = (event: Event) => {
+            // @ts-expect-error
             call(new Proxy(event, { get: self.handler }))
           }
         }
-        return self.oriRTCAddEventListener.apply(this, arguments)
+        return self.oriRTCAddEventListener.apply(this, arg)
       }
-      return self.oriRTCAddEventListener.apply(this, arguments)
+      return self.oriRTCAddEventListener.apply(this, arg)
     }
 
-    window.RTCPeerConnection = function (this: RTCPeerConnection) {
+    window.RTCPeerConnection = function (
+      this: RTCPeerConnection,
+      ...arg: ConstructorParameters<typeof RTCPeerConnection>
+    ) {
       const connection =
         this instanceof self.oriRTCPeerConnection
-          ? self.oriRTCPeerConnection.apply(this, arguments)
-          : new self.oriRTCPeerConnection(...arguments)
+          ? self.oriRTCPeerConnection.apply(this, arg)
+          : new self.oriRTCPeerConnection(...arg)
 
       return new Proxy(connection!, {
-        get: (target, key) => {
+        get: (target: RTCPeerConnection, key: keyof RTCPeerConnection) => {
           const res = target[key]
           return typeof res === 'function' ? res.bind(target) : res
         },
-        set: (target, key, value) => {
+        set: (target: RTCPeerConnection, key: keyof MutableKeys<RTCPeerConnection>, value: any) => {
           if (!value) return true
           if (key === 'onicecandidate') {
             target[key] = (event: Event) => {

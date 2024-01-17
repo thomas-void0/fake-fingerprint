@@ -13,7 +13,6 @@ import {
   type KeysStatus,
   type ReportArg,
 } from './type'
-// import {  } from 't2t-tools'
 
 const ClassMap = new Map<keyof CONFIG, ClassType>([
   ['navigator', NavigatorHandle],
