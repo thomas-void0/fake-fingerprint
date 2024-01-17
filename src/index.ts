@@ -125,10 +125,13 @@ const instance = new FakeFingerPrint({
     // audio: {
     //   strength: 100,
     // },
-    timezone: {
-      zone: 'America/NewYork',
-      locale: 'en-US',
-      offset: -5,
+    // timezone: {
+    //   zone: 'America/New_York',
+    //   locale: 'en-US',
+    //   offset: -5,
+    // },
+    webGL: {
+      driver: 'ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)',
     },
   },
   report: (arg) => {
@@ -136,4 +139,4 @@ const instance = new FakeFingerPrint({
   },
 })
 
-instance.open(['timezone'])
+instance.open(['webGL'])
