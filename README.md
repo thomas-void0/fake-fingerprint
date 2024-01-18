@@ -74,7 +74,7 @@ instance.open();
 
 # API
 
-arguments of `FakeFingerPrint`.
+## `Arguments of FakeFingerPrint`.
 
 |    name    |                          explain                           |   type   | required |
 | :--------: | :--------------------------------------------------------: | :------: | :------: |
@@ -82,7 +82,7 @@ arguments of `FakeFingerPrint`.
 |   report   | when property or function to be visit. It‘s will be invoke | function |   yes    |
 | reportKeys |  need keys of report. default null, will report all keys   |  key[]   |    no    |
 
-`config`:
+`Config`:
 
 |   name    |                                            explain                                            |                                 example                                 |
 | :-------: | :-------------------------------------------------------------------------------------------: | :---------------------------------------------------------------------: |
@@ -93,6 +93,15 @@ arguments of `FakeFingerPrint`.
 | timezone  |       custom timezone info. offset is Offset equivalent to standard time, unit is hour        |          {zone: "America/New_York",locale: "en-US",offset: -5}          |
 |   webGL   |                                 reutrn driver of information                                  | {driver: "ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)"} |
 |  webRTC   |                                      custrom ip address                                       |                          {address:"127.0.0.1"}                          |
+
+## `Instance Property`.
+
+|     name      |                                                     explain                                                     |   type   |                         example                         |
+| :-----------: | :-------------------------------------------------------------------------------------------------------------: | :------: | :-----------------------------------------------------: |
+|     open      | open configuration of fake fingerprint, If no parameter is specified, all configurations are enabled by default | function |          instance.open(['navigator','canvas'])          |
+|     close     | close configuration of fake fingerprint, If no parameter is specified, all configurations are closed by default | function |         instance.close(['navigator','canvas'])          |
+|      set      |                                      set configuration of fake fingerprint                                      | function | instance.set({ navigator: { userAgent: 'Custom UA' } }) |
+| getKeysStatus |                                   get the currently configured category usage                                   | function | {close:['navigator','canvas'],open:['canvas','webGL']}  |
 
 # License
 

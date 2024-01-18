@@ -74,7 +74,7 @@ instance.open();
 
 # API
 
-`FakeFingerPrint`的参数.
+## `FakeFingerPrint`的参数.
 
 |    名称    |                          描述                          |   类型   | 是否必须 |
 | :--------: | :----------------------------------------------------: | :------: | :------: |
@@ -93,6 +93,15 @@ instance.open();
 | timezone  |      自定义时区信息， offset是相对于标准时间的偏移量, 单位是小时      |          {zone: "America/New_York",locale: "en-US",offset: -5}          |
 |   webGL   |                          返回渲染的设备信息                           | {driver: "ANGLE (NVIDIA GeForce GTX 1050 Ti Direct3D11 vs_5_0 ps_5_0)"} |
 |  webRTC   |                          自定义的ip地址信息                           |                          {address:"127.0.0.1"}                          |
+
+## `实例属性`.
+
+|     名称      |                         描述                         |   类型   |                          示例                           |
+| :-----------: | :--------------------------------------------------: | :------: | :-----------------------------------------------------: |
+|     open      | 开启虚假指纹的配置，如果不指定参数，默认开启所有配置 | function |          instance.open(['navigator','canvas'])          |
+|     close     | 关闭虚假指纹的配置，如果不指定参数，默认开启所有配置 | function |         instance.close(['navigator','canvas'])          |
+|      set      |                  设置虚假指纹的配置                  | function | instance.set({ navigator: { userAgent: 'Custom UA' } }) |
+| getKeysStatus |              获取当前配置的类别使用情况              | function | {close:['navigator','canvas'],open:['canvas','webGL']}  |
 
 # 证书
 
