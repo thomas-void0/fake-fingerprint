@@ -1,4 +1,4 @@
-## 0.0.1 (2024-01-17)
+## 0.0.1 (2024-01-18)
 
 
 ### Bug Fixes
@@ -14,6 +14,7 @@
 
 * add audio config ([641131c](https://github.com/thomas-void0/fake-fingerprint/commit/641131c68143aeacf8941586b1befdaf6bc082b4))
 * add collect invoke ([b1b9ef4](https://github.com/thomas-void0/fake-fingerprint/commit/b1b9ef4dc3942ce1544cd7b199f3972aed2f7136))
+* add test demo and update readme ([c3e047a](https://github.com/thomas-void0/fake-fingerprint/commit/c3e047a4593a4c2918990c35c3477c047c9d3163))
 * add webGL ([ef38c34](https://github.com/thomas-void0/fake-fingerprint/commit/ef38c34524f03d7b1676417fee09ea0091af26a8))
 * add webRTC ([5ad74ac](https://github.com/thomas-void0/fake-fingerprint/commit/5ad74ac306a095c87b18ae28fe9e0974459d8cac))
 * add webRTC report ([44cddf1](https://github.com/thomas-void0/fake-fingerprint/commit/44cddf18904196cf6058cb1fba1d0fbf56192949))
