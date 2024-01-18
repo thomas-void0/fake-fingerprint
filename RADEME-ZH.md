@@ -2,7 +2,7 @@
 
 生成虚假的浏览器指纹
 
-[English](./RADEME.md)
+[English](./README.md)
 
 # 示例
 
