@@ -2,7 +2,7 @@
   "name": "fake-fingerprint",
   "version": "0.0.1",
   "packageManager": "pnpm@8.10.5",
-  "description": "generate fake fingerprint of brower.",
+  "description": "generate fake fingerprint of browser.",
   "type": "module",
   "keywords": [
     "fake",

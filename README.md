@@ -1,6 +1,6 @@
 # fake fingerprint
 
-generate fake fingerprint of brower.
+generate fake fingerprint of browser.
 
 [简体中文](./RADEME-ZH.md)
 
